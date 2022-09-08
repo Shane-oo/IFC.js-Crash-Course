@@ -1,0 +1,25 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  overflow: hidden;
+}
+
+#canvas{
+  position: absolute;
+  width:100%;
+  height:100%;
+  outline: none;
+}
+
+
+html, body {
+  overflow:hidden;
+}
+
+.webgl {
+  position: fixed;
+  top:57px;
+  left: 0;
+  outline: none;
+}
