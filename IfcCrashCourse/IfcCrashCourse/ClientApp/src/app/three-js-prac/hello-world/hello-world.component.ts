@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import * as THREE from 'three';
 import CameraControls from 'camera-controls';
+import Stats from 'three/examples/jsm/libs/stats.module';
 
 interface ObjectToTest {
   [uuid: string]: {
@@ -68,8 +69,10 @@ export class HelloWorldComponent implements OnInit, AfterViewInit {
   private objectsToTest = [this.cubeMesh, this.greenCube, this.blueCube];
   private previousSelectedUuid: string = '';
 
-  constructor() {
+  // stats
+  private stats: Stats = Stats();
 
+  constructor() {
     CameraControls.install({THREE: this.subsetOfTHREE});
 
     this.scene.background = new THREE.Color('black');
@@ -91,7 +94,8 @@ export class HelloWorldComponent implements OnInit, AfterViewInit {
 
     this.scene.add(this.axesHelper, this.gridHelper);
 
-    //raycaster
+    //stats
+    document.body.appendChild(this.stats.dom);
   }
 
   private get canvas(): HTMLCanvasElement {
@@ -106,21 +110,20 @@ export class HelloWorldComponent implements OnInit, AfterViewInit {
     this.raycaster.setFromCamera(this.mouse, this.camera);
     const intersects = this.raycaster.intersectObjects(this.objectsToTest);
 
-    for(const object of this.objectsToTest){
+    for(const object of this.objectsToTest) {
       // @ts-ignore
       object.material.color.set('#ff0000');
 
       const intersects = this.raycaster.intersectObject(object);
-      if(intersects.length!==0){
-        if(!this.previousSelectedUuid){
+      if(intersects.length !== 0) {
+        if(!this.previousSelectedUuid) {
 
           // @ts-ignore
           object.material.color.set('orange');
         }
         this.previousSelectedUuid = intersects[0].object.uuid;
-      }
-      else{
-        this.previousSelectedUuid = "";
+      } else {
+        this.previousSelectedUuid = '';
       }
     }
   }
@@ -173,6 +176,9 @@ export class HelloWorldComponent implements OnInit, AfterViewInit {
     }());
   }
 
+  // Adding more logic to that function will make the rendering of each frame slower and hurt the performance of our apps.
+  // As a rule of thumb, keep the animation function as small as possible, and use other events
+  // for the rest of the logic (e.g. use the mousemove event to use the Raycaster).
   private animate() {
     const delta = this.clock.getDelta();
     this.cameraControls.update(delta);
@@ -185,6 +191,8 @@ export class HelloWorldComponent implements OnInit, AfterViewInit {
 
     this.blueCube.rotation.x += 0.005;
     this.blueCube.rotation.z += .005;
+
+    this.stats.update();
 
   }
 }
